@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useJobs } from '../hooks/useJobs'
 import { useSavedJobs } from '../hooks/useSavedJobs'
 import { useApplications } from '../hooks/useApplications'
+import { supabase } from '../services/supabase'
 import type { Job } from '../types'
 
 const TECH_OPTIONS = [
@@ -38,12 +39,24 @@ function ProgressRing({ percent }: { percent: number }) {
 
 export default function HomePage() {
   const [search, setSearch] = useState('')
-  const [tech, setTech] = useState('')
+  const [selectedTechs, setSelectedTechs] = useState<string[]>([])
   const [city, setCity] = useState('')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { savedIds, saveJob, unsaveJob, savedJobs } = useSavedJobs()
   const { applications, createApplication } = useApplications()
+  const tech = selectedTechs.join(',')
   const { jobs, loading, error, hasMore, loadMore, total } = useJobs(search, tech, city)
   const appliedIds = new Set(applications.map(a => a.externalJobId))
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setIsLoggedIn(!!data.session))
+  }, [])
+
+  const toggleTech = (t: string) => {
+    setSelectedTechs(prev =>
+      prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -52,31 +65,41 @@ export default function HomePage() {
         <p className="text-gray-400 mt-2">Annonser rankade efter hur väl de matchar din profil</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <input
-          type="text"
-          placeholder="Sök titel eller företag..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-        />
-        <select
-          value={tech}
-          onChange={e => setTech(e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-        >
-          <option value="">Alla tekniker</option>
-          {TECH_OPTIONS.map(t => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="Stad..."
-          value={city}
-          onChange={e => setCity(e.target.value)}
-          className="w-40 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-        />
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            type="text"
+            placeholder="Sök titel eller företag..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+          />
+          <input
+            type="text"
+            placeholder="Stad..."
+            value={city}
+            onChange={e => setCity(e.target.value)}
+            className="w-full sm:w-40 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {!isLoggedIn && (
+          <div className="flex flex-wrap gap-2">
+            {TECH_OPTIONS.map(t => (
+              <button
+                key={t}
+                onClick={() => toggleTech(t)}
+                className={`text-xs px-3 py-1.5 rounded-lg border transition ${
+                  selectedTechs.includes(t)
+                    ? 'bg-blue-600 border-blue-500 text-white'
+                    : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-500'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {loading && <p className="text-gray-400">Laddar annonser...</p>}
@@ -120,7 +143,8 @@ export default function HomePage() {
           />
         ))}
       </div>
-            {hasMore && (
+
+      {hasMore && (
         <div className="text-center pt-4">
           <button
             onClick={loadMore}
