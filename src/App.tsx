@@ -40,6 +40,7 @@ export default function App() {
             <Link to="/" className="hover:text-white transition">Hitta LIA</Link>
             {session && (
               <>
+                <Link to="/dashboard" className="hover:text-white transition">Dashboard</Link>
                 <Link to="/sparade" className="hover:text-white transition">Sparade</Link>
                 <Link to="/ansokningar" className="hover:text-white transition">Ansökningar</Link>
                 <Link to="/profil" className="hover:text-white transition">Profil</Link>

@@ -7,6 +7,7 @@ import ProfilePage from './pages/ProfilePage.tsx'
 import SavedJobsPage from './pages/SavedJobsPage.tsx'
 import ApplicationsPage from './pages/ApplicationsPage.tsx'
 import './index.css'
+import DashboardPage from './pages/DashboardPage.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="profil" element={<ProfilePage />} />
           <Route path="sparade" element={<SavedJobsPage />} />
           <Route path="ansokningar" element={<ApplicationsPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
