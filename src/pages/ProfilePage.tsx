@@ -1,3 +1,127 @@
+import { useState, useEffect } from 'react'
+import { useProfile } from '../hooks/useProfile'
+import { supabase } from '../services/supabase'
+
+const TECH_CATEGORIES = {
+  'Backend': ['.NET', 'C#', 'ASP.NET', 'Java', 'Spring', 'Python', 'Node.js', 'PHP', 'Go', 'Rust'],
+  'Frontend': ['React', 'Angular', 'Vue', 'TypeScript', 'JavaScript', 'HTML', 'CSS', 'Blazor'],
+  'Databas': ['SQL', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'SQLite', 'Entity Framework'],
+  'Cloud & DevOps': ['Azure', 'AWS', 'Docker', 'Kubernetes', 'CI/CD', 'GitHub Actions', 'Linux'],
+  'Övrigt': ['Git', 'Scrum', 'Agile', 'REST', 'API', 'MAUI', 'Kotlin', 'Swift']
+}
+
+
 export default function ProfilePage() {
-  return <div>ProfilePage</div>
+  const { profile, loading, updateProfile } = useProfile()
+  const [session, setSession] = useState<any>(null)
+  const [name, setName] = useState('')
+  const [city, setCity] = useState('')
+  const [selectedTechs, setSelectedTechs] = useState<string[]>([])
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+  }, [])
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name || '')
+      setCity(profile.city || '')
+    }
+  }, [profile])
+
+  const toggleTech = (tech: string) => {
+    setSelectedTechs(prev =>
+      prev.includes(tech) ? prev.filter(t => t !== tech) : [...prev, tech]
+    )
+  }
+
+  const handleSave = async () => {
+    await updateProfile({ name, city, techStacks: selectedTechs })
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  if (!session) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-gray-400">Du måste vara inloggad för att se din profil.</p>
+      </div>
+    )
+  }
+
+  if (loading) return <p className="text-gray-400">Laddar profil...</p>
+
+  return (
+    <div className="space-y-8 max-w-2xl">
+      <div>
+        <h1 className="text-3xl font-bold">Min profil</h1>
+        <p className="text-gray-400 mt-2">Fyll i din profil för att få bättre matchningar</p>
+      </div>
+
+      {/* Basic info */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+        <h2 className="font-semibold text-white">Grundinfo</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label className="text-sm text-gray-400">Namn</label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Ditt namn"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm text-gray-400">Stad</label>
+            <input
+              type="text"
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              placeholder="Din stad"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Tech stack */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-6">
+        <div>
+          <h2 className="font-semibold text-white">Min techstack</h2>
+          <p className="text-sm text-gray-400 mt-1">Välj de tekniker du kan — används för att matcha annonser</p>
+        </div>
+
+        {Object.entries(TECH_CATEGORIES).map(([category, techs]) => (
+          <div key={category} className="space-y-2">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{category}</h3>
+            <div className="flex flex-wrap gap-2">
+              {techs.map(tech => (
+                <button
+                  key={tech}
+                  onClick={() => toggleTech(tech)}
+                  className={`text-sm px-3 py-1 rounded-lg border transition ${
+                    selectedTechs.includes(tech)
+                      ? 'bg-blue-600 border-blue-500 text-white'
+                      : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-500'
+                  }`}
+                >
+                  {tech}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Save button */}
+      <button
+        onClick={handleSave}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition font-medium"
+      >
+        {saved ? '✓ Sparat!' : 'Spara profil'}
+      </button>
+    </div>
+  )
 }
