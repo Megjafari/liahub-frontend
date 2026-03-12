@@ -42,7 +42,7 @@ export default function HomePage() {
   const [city, setCity] = useState('')
   const { savedIds, saveJob, unsaveJob, savedJobs } = useSavedJobs()
   const { applications, createApplication } = useApplications()
-  const { jobs, loading, error } = useJobs(search, tech, city)
+  const { jobs, loading, error, hasMore, loadMore, total } = useJobs(search, tech, city)
   const appliedIds = new Set(applications.map(a => a.externalJobId))
 
   return (
@@ -120,6 +120,16 @@ export default function HomePage() {
           />
         ))}
       </div>
+            {hasMore && (
+        <div className="text-center pt-4">
+          <button
+            onClick={loadMore}
+            className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-2 rounded-lg transition text-sm"
+          >
+            Ladda fler ({total - jobs.length} kvar)
+          </button>
+        </div>
+      )}
     </div>
   )
 }

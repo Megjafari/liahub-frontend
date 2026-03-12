@@ -13,7 +13,7 @@ const TECH_CATEGORIES = {
 
 export default function ProfilePage() {
   const { profile, loading, updateProfile } = useProfile()
-  const { active, frequency, loading: notifLoading, updateSettings } = useNotifications()
+  const { active, loading: notifLoading, updateSettings } = useNotifications()
   const [session, setSession] = useState<any>(null)
   const [name, setName] = useState('')
   const [city, setCity] = useState('')
