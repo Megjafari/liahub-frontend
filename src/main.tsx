@@ -6,8 +6,11 @@ import HomePage from './pages/HomePage.tsx'
 import ProfilePage from './pages/ProfilePage.tsx'
 import SavedJobsPage from './pages/SavedJobsPage.tsx'
 import ApplicationsPage from './pages/ApplicationsPage.tsx'
-import './index.css'
 import DashboardPage from './pages/DashboardPage.tsx'
+import OmPage from './pages/OmPage.tsx'
+import KontaktPage from './pages/KontaktPage.tsx'
+import IntegritetspolicyPage from './pages/IntegritetspolicyPage.tsx'
+import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,6 +22,9 @@ createRoot(document.getElementById('root')!).render(
           <Route path="sparade" element={<SavedJobsPage />} />
           <Route path="ansokningar" element={<ApplicationsPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="om" element={<OmPage />} />
+          <Route path="kontakt" element={<KontaktPage />} />
+          <Route path="integritetspolicy" element={<IntegritetspolicyPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
