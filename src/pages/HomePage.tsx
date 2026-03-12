@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useJobs } from '../hooks/useJobs'
 import { useSavedJobs } from '../hooks/useSavedJobs'
 import type { Job } from '../types'
+import { useApplications } from '../hooks/useApplications'
 
 const TECH_OPTIONS = [
   '.NET', 'C#', 'React', 'TypeScript', 'JavaScript',
@@ -15,6 +16,9 @@ export default function HomePage() {
   const [city, setCity] = useState('')
   const { savedIds, saveJob, unsaveJob, savedJobs } = useSavedJobs()
   const { jobs, loading, error } = useJobs(search, tech, city)
+
+  const { applications, createApplication } = useApplications()
+  const appliedIds = new Set(applications.map(a => a.externalJobId))
 
   return (
     <div className="space-y-8">
@@ -72,6 +76,7 @@ export default function HomePage() {
             key={job.id}
             job={job}
             isSaved={savedIds.has(job.externalId)}
+            isApplied={appliedIds.has(job.externalId)}
             onSave={() => saveJob({
               externalJobId: job.externalId,
               jobTitle: job.title,
@@ -82,6 +87,12 @@ export default function HomePage() {
               const saved = savedJobs.find(s => s.externalJobId === job.externalId)
               if (saved) unsaveJob(saved.id)
             }}
+            onApply={() => createApplication({
+              externalJobId: job.externalId,
+              jobTitle: job.title,
+              employer: job.employer
+          })}
+
           />
         ))}
       </div>
@@ -89,11 +100,13 @@ export default function HomePage() {
   )
 }
 
-function JobCard({ job, isSaved, onSave, onUnsave }: {
+function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
   job: Job
   isSaved: boolean
+  isApplied: boolean
   onSave: () => void
   onUnsave: () => void
+  onApply: () => void
 }) {
   const [showWhy, setShowWhy] = useState(false)
   const hasMatchData = job.matchScore > 0
@@ -208,6 +221,17 @@ function JobCard({ job, isSaved, onSave, onUnsave }: {
           }`}
         >
           {isSaved ? '★ Sparad' : '☆ Spara'}
+        </button>
+        <button
+          onClick={onApply}
+          disabled={isApplied}
+          className={`text-sm transition ${
+            isApplied
+              ? 'text-green-400 cursor-default'
+              : 'text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          {isApplied ? '✓ Sökt' : 'Markera som sökt'}
         </button>
       </div>
     </div>
