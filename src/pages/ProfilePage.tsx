@@ -27,6 +27,8 @@ export default function ProfilePage() {
     if (profile) {
       setName(profile.name || '')
       setCity(profile.city || '')
+      setSelectedTechs(profile.techStacks || [])
+
     }
   }, [profile])
 
