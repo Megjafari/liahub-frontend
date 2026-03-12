@@ -20,6 +20,7 @@ export interface User {
   school: string | null
   liaPeriod: string | null
   createdAt: string
+  techStacks: string[]
 }
 
 export interface UserTechStack {
