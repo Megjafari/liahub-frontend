@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useProfile } from '../hooks/useProfile'
+import { useNotifications } from '../hooks/useNotifications'
 import { supabase } from '../services/supabase'
 
 const TECH_CATEGORIES = {
@@ -10,9 +11,9 @@ const TECH_CATEGORIES = {
   'Övrigt': ['Git', 'Scrum', 'Agile', 'REST', 'API', 'MAUI', 'Kotlin', 'Swift']
 }
 
-
 export default function ProfilePage() {
   const { profile, loading, updateProfile } = useProfile()
+  const { active, frequency, loading: notifLoading, updateSettings } = useNotifications()
   const [session, setSession] = useState<any>(null)
   const [name, setName] = useState('')
   const [city, setCity] = useState('')
@@ -28,7 +29,6 @@ export default function ProfilePage() {
       setName(profile.name || '')
       setCity(profile.city || '')
       setSelectedTechs(profile.techStacks || [])
-
     }
   }, [profile])
 
@@ -94,7 +94,6 @@ export default function ProfilePage() {
           <h2 className="font-semibold text-white">Min techstack</h2>
           <p className="text-sm text-gray-400 mt-1">Välj de tekniker du kan — används för att matcha annonser</p>
         </div>
-
         {Object.entries(TECH_CATEGORIES).map(([category, techs]) => (
           <div key={category} className="space-y-2">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{category}</h3>
@@ -116,6 +115,29 @@ export default function ProfilePage() {
           </div>
         ))}
       </div>
+
+    {/* Notifications */}
+    {!notifLoading && (
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+        <div>
+          <h2 className="font-semibold text-white">Jobbnotiser</h2>
+          <p className="text-sm text-gray-400 mt-1">Få mejl direkt när nya jobb matchar din techstack</p>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-300">Notifiera mig om nya matchningar</span>
+          <button
+            onClick={() => updateSettings(!active)}
+            className={`relative w-12 h-6 rounded-full transition ${
+              active ? 'bg-blue-600' : 'bg-gray-700'
+            }`}
+          >
+            <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+              active ? 'left-7' : 'left-1'
+            }`} />
+          </button>
+        </div>
+      </div>
+    )}
 
       {/* Save button */}
       <button
