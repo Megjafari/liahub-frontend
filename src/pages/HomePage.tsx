@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useJobs } from '../hooks/useJobs'
 import { useSavedJobs } from '../hooks/useSavedJobs'
-import type { Job } from '../types'
 import { useApplications } from '../hooks/useApplications'
+import type { Job } from '../types'
 
 const TECH_OPTIONS = [
   '.NET', 'C#', 'React', 'TypeScript', 'JavaScript',
@@ -10,14 +10,39 @@ const TECH_OPTIONS = [
   'SQL', 'PostgreSQL', 'Docker', 'Azure', 'AWS'
 ]
 
+function ProgressRing({ percent }: { percent: number }) {
+  const radius = 20
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference - (percent / 100) * circumference
+  const color = percent >= 80 ? '#4ade80' : percent >= 50 ? '#facc15' : '#6b7280'
+
+  return (
+    <svg width="52" height="52" viewBox="0 0 52 52">
+      <circle cx="26" cy="26" r={radius} fill="none" stroke="#1f2937" strokeWidth="4" />
+      <circle
+        cx="26" cy="26" r={radius}
+        fill="none"
+        stroke={color}
+        strokeWidth="4"
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        transform="rotate(-90 26 26)"
+      />
+      <text x="26" y="31" textAnchor="middle" fontSize="11" fontWeight="bold" fill={color}>
+        {percent}%
+      </text>
+    </svg>
+  )
+}
+
 export default function HomePage() {
   const [search, setSearch] = useState('')
   const [tech, setTech] = useState('')
   const [city, setCity] = useState('')
   const { savedIds, saveJob, unsaveJob, savedJobs } = useSavedJobs()
-  const { jobs, loading, error } = useJobs(search, tech, city)
-
   const { applications, createApplication } = useApplications()
+  const { jobs, loading, error } = useJobs(search, tech, city)
   const appliedIds = new Set(applications.map(a => a.externalJobId))
 
   return (
@@ -91,8 +116,7 @@ export default function HomePage() {
               externalJobId: job.externalId,
               jobTitle: job.title,
               employer: job.employer
-          })}
-
+            })}
           />
         ))}
       </div>
@@ -135,13 +159,7 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
         </div>
         <div className="flex flex-col items-end gap-1">
           {hasMatchData ? (
-            <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap font-medium ${
-              matchPercent >= 75 ? 'bg-green-900 text-green-300' :
-              matchPercent >= 50 ? 'bg-blue-900 text-blue-300' :
-              'bg-gray-800 text-gray-400'
-            }`}>
-              {matchPercent}% match
-            </span>
+            <ProgressRing percent={matchPercent} />
           ) : (
             <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full whitespace-nowrap">
               {job.relevanceScore}p relevans
@@ -226,9 +244,7 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
         <button
           onClick={isSaved ? onUnsave : onSave}
           className={`text-sm transition ${
-            isSaved
-              ? 'text-yellow-400 hover:text-yellow-300'
-              : 'text-gray-500 hover:text-gray-300'
+            isSaved ? 'text-yellow-400 hover:text-yellow-300' : 'text-gray-500 hover:text-gray-300'
           }`}
         >
           {isSaved ? '★ Sparad' : '☆ Spara'}
@@ -237,9 +253,7 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
           onClick={onApply}
           disabled={isApplied}
           className={`text-sm transition ${
-            isApplied
-              ? 'text-green-400 cursor-default'
-              : 'text-gray-500 hover:text-gray-300'
+            isApplied ? 'text-green-400 cursor-default' : 'text-gray-500 hover:text-gray-300'
           }`}
         >
           {isApplied ? '✓ Sökt' : 'Markera som sökt'}
