@@ -3,12 +3,16 @@ import api from '../services/api'
 import { supabase } from '../services/supabase'
 import type { Job } from '../types'
 
+const PAGE_SIZE = 10
+
 export function useJobs(search: string, tech: string, city: string) {
-  const [jobs, setJobs] = useState<Job[]>([])
+  const [allJobs, setAllJobs] = useState<Job[]>([])
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setVisibleCount(PAGE_SIZE)
     const fetchJobs = async () => {
       setLoading(true)
       try {
@@ -17,7 +21,6 @@ export function useJobs(search: string, tech: string, city: string) {
         if (tech) params.append('tech', tech)
         if (city) params.append('city', city)
 
-        // Get user skills if logged in
         const { data: sessionData } = await supabase.auth.getSession()
         if (sessionData.session) {
           try {
@@ -27,12 +30,12 @@ export function useJobs(search: string, tech: string, city: string) {
               params.append('skills', userSkills.join(','))
             }
           } catch {
-            // Not logged in or no profile — skip skills
+            // skip
           }
         }
 
         const response = await api.get(`/api/Jobs?${params.toString()}`)
-        setJobs(response.data)
+        setAllJobs(response.data)
       } catch {
         setError('Kunde inte hämta annonser.')
       } finally {
@@ -43,5 +46,9 @@ export function useJobs(search: string, tech: string, city: string) {
     fetchJobs()
   }, [search, tech, city])
 
-  return { jobs, loading, error }
+  const jobs = allJobs.slice(0, visibleCount)
+  const hasMore = visibleCount < allJobs.length
+  const loadMore = () => setVisibleCount(prev => prev + PAGE_SIZE)
+
+  return { jobs, loading, error, hasMore, loadMore, total: allJobs.length }
 }
