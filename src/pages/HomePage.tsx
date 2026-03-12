@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useJobs } from '../hooks/useJobs'
+import { useSavedJobs } from '../hooks/useSavedJobs'
 import type { Job } from '../types'
 
 const TECH_OPTIONS = [
@@ -12,7 +13,7 @@ export default function HomePage() {
   const [search, setSearch] = useState('')
   const [tech, setTech] = useState('')
   const [city, setCity] = useState('')
-
+  const { savedIds, saveJob, unsaveJob, savedJobs } = useSavedJobs()
   const { jobs, loading, error } = useJobs(search, tech, city)
 
   return (
@@ -67,19 +68,37 @@ export default function HomePage() {
 
       <div className="space-y-4">
         {jobs.map(job => (
-          <JobCard key={job.id} job={job} />
+          <JobCard
+            key={job.id}
+            job={job}
+            isSaved={savedIds.has(job.externalId)}
+            onSave={() => saveJob({
+              externalJobId: job.externalId,
+              jobTitle: job.title,
+              employer: job.employer,
+              url: job.url
+            })}
+            onUnsave={() => {
+              const saved = savedJobs.find(s => s.externalJobId === job.externalId)
+              if (saved) unsaveJob(saved.id)
+            }}
+          />
         ))}
       </div>
     </div>
   )
 }
 
-function JobCard({ job }: { job: Job }) {
+function JobCard({ job, isSaved, onSave, onUnsave }: {
+  job: Job
+  isSaved: boolean
+  onSave: () => void
+  onUnsave: () => void
+}) {
   const [showWhy, setShowWhy] = useState(false)
   const hasMatchData = job.matchScore > 0
   const visibleTags = job.techTags.slice(0, 5)
   const extraTags = job.techTags.length - 5
-
   const matchPercent = Math.round(job.matchScore * 100)
 
   return (
@@ -107,7 +126,6 @@ function JobCard({ job }: { job: Job }) {
         </div>
       </div>
 
-      {/* Tech tags - max 5 + overflow */}
       {job.techTags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {visibleTags.map(tag => (
@@ -130,7 +148,6 @@ function JobCard({ job }: { job: Job }) {
         </div>
       )}
 
-      {/* Student signals */}
       {job.studentSignals.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {job.studentSignals.map(signal => (
@@ -141,7 +158,6 @@ function JobCard({ job }: { job: Job }) {
         </div>
       )}
 
-      {/* Why this match */}
       {hasMatchData && (
         <button
           onClick={() => setShowWhy(!showWhy)}
@@ -174,14 +190,26 @@ function JobCard({ job }: { job: Job }) {
         </div>
       )}
 
-      <a
-        href={job.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-block text-sm text-blue-400 hover:text-blue-300 transition"
-      >
-        Visa annons →
-      </a>
+      <div className="flex items-center gap-4">
+        <a
+          href={job.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-blue-400 hover:text-blue-300 transition"
+        >
+          Visa annons →
+        </a>
+        <button
+          onClick={isSaved ? onUnsave : onSave}
+          className={`text-sm transition ${
+            isSaved
+              ? 'text-yellow-400 hover:text-yellow-300'
+              : 'text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          {isSaved ? '★ Sparad' : '☆ Spara'}
+        </button>
+      </div>
     </div>
   )
 }
