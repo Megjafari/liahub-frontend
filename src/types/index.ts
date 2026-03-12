@@ -14,6 +14,7 @@ export interface Job {
   matchedSkills: string[]
   missingSkills: string[]
   locationMatched: boolean
+  workMode: string | null
 }
 
 export interface User {
