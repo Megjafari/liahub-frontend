@@ -10,6 +10,10 @@ export interface Job {
   relevanceScore: number
   url: string
   fetchedAt: string
+  matchScore: number
+  matchedSkills: string[]
+  missingSkills: string[]
+  locationMatched: boolean
 }
 
 export interface User {
