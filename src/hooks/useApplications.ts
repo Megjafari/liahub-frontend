@@ -54,6 +54,9 @@ export function useApplications() {
   link?: string
   notes?: string
   status?: string
+  contactName?: string
+  contactEmail?: string
+  appliedDate?: string
   }) => {
   await api.post('/api/Applications', {
     externalJobId: crypto.randomUUID(),

@@ -3,6 +3,8 @@ import { useApplications } from '../hooks/useApplications'
 import { supabase } from '../services/supabase'
 import type { Application } from '../types'
 import PageTransition from '../components/PageTransition'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 const STATUSES = ['Sökt', 'Intervju', 'Erbjudande', 'Avslag']
 
@@ -26,7 +28,10 @@ export default function ApplicationsPage() {
     source: '',
     link: '',
     notes: '',
-    status: 'Sökt'
+    status: '',
+    contactName: '',
+    contactEmail: '',
+    appliedDate: '',
   })
 
   useEffect(() => {
@@ -36,7 +41,7 @@ export default function ApplicationsPage() {
   const handleSubmit = async () => {
     if (!form.jobTitle || !form.employer) return
     await createManualApplication(form)
-    setForm({ jobTitle: '', employer: '', location: '', source: '', link: '', notes: '', status: 'Sökt' })
+    setForm({ jobTitle: '', employer: '', location: '', source: '', link: '', notes: '', status: '', contactName: '', contactEmail: '', appliedDate: '' })
     setShowForm(false)
   }
 
@@ -56,13 +61,15 @@ export default function ApplicationsPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold">Mina ansökningar</h1>
-            <p className="text-gray-400 mt-2">{applications.length} ansökningar</p>
+            <p className="text-gray-400 mt-2">
+              {applications.length} {applications.length === 1 ? 'ansökan' : 'ansökningar'}
+            </p>
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition"
           >
-            + Lägg till manuellt
+            + Lägg till ansökan
           </button>
         </div>
 
@@ -83,7 +90,7 @@ export default function ApplicationsPage() {
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
               <input
-                placeholder="Stad"
+                placeholder="Stad (valfritt)"
                 value={form.location}
                 onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -93,25 +100,49 @@ export default function ApplicationsPage() {
                 onChange={e => setForm(f => ({ ...f, source: e.target.value }))}
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
               >
-                <option value="">Källa...</option>
+                <option value="">Välj källa...</option>
                 {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
               <input
-                placeholder="Länk till annons"
+                placeholder="Länk till annons (valfritt)"
                 value={form.link}
                 onChange={e => setForm(f => ({ ...f, link: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+
+              <DatePicker
+                selected={form.appliedDate ? new Date(form.appliedDate) : null}
+                onChange={(date: Date | null) => setForm(f => ({ ...f, appliedDate: date ? date.toISOString().split('T')[0] : '' }))}
+                placeholderText="Datum ansökt"
+                dateFormat="yyyy-MM-dd"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                calendarClassName="dark-calendar"
+                maxDate={new Date()}
+              />
+
+              <input
+                placeholder="Kontaktperson (valfritt)"
+                value={form.contactName}
+                onChange={e => setForm(f => ({ ...f, contactName: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <input
+                placeholder="E-post till kontakt (valfritt)"
+                value={form.contactEmail}
+                onChange={e => setForm(f => ({ ...f, contactEmail: e.target.value }))}
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
               <select
                 value={form.status}
                 onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
-                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               >
+                <option value="" disabled>Välj status...</option>
                 {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <textarea
-              placeholder="Anteckningar..."
+              placeholder="Anteckningar (t.ex. vem du pratade med eller nästa steg)"
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
               rows={2}
