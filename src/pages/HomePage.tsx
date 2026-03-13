@@ -5,6 +5,7 @@ import { useApplications } from '../hooks/useApplications'
 import { supabase } from '../services/supabase'
 import type { Job } from '../types'
 import PageTransition from '../components/PageTransition'
+import { useAuthModalContext } from '../context/AuthModalContext'
 
 const TECH_OPTIONS = [
   '.NET', 'C#', 'React', 'TypeScript', 'JavaScript',
@@ -48,6 +49,7 @@ export default function HomePage() {
   const tech = selectedTechs.join(',')
   const { jobs, loading, error, hasMore, loadMore, total } = useJobs(search, tech, city)
   const appliedIds = new Set(applications.map(a => a.externalJobId))
+  const { requireAuth } = useAuthModalContext()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setIsLoggedIn(!!data.session))
@@ -151,21 +153,21 @@ export default function HomePage() {
             job={job}
             isSaved={savedIds.has(job.externalId)}
             isApplied={appliedIds.has(job.externalId)}
-            onSave={() => saveJob({
+            onSave={() => requireAuth(isLoggedIn, () => saveJob({
               externalJobId: job.externalId,
               jobTitle: job.title,
               employer: job.employer,
               url: job.url
-            })}
-            onUnsave={() => {
+            }))}
+            onUnsave={() => requireAuth(isLoggedIn, () => {
               const saved = savedJobs.find(s => s.externalJobId === job.externalId)
               if (saved) unsaveJob(saved.id)
-            }}
-            onApply={() => createApplication({
+            })}
+            onApply={() => requireAuth(isLoggedIn, () => createApplication({
               externalJobId: job.externalId,
               jobTitle: job.title,
               employer: job.employer
-            })}
+            }))}
           />
         ))}
       </div>
