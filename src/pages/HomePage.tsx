@@ -73,7 +73,7 @@ export default function HomePage() {
 
         <div className="inline-flex items-center gap-2 bg-blue-950/60 border border-blue-800/50 text-blue-400 text-xs px-3 py-1 rounded-full mb-4">
           <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
-          För YH-studenter inom tech
+          För studenter inom tech
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
@@ -84,7 +84,7 @@ export default function HomePage() {
         </p>
 
         <div className="flex flex-wrap gap-2 mt-4">
-          {['Rankade efter tech stack', 'Byggd för YH-studenter', 'Annonser från Arbetsförmedlingen'].map(tag => (
+          {['Rankade efter din tech stack', 'Byggd av en student', 'Annonser från Arbetsförmedlingen API'].map(tag => (
             <span key={tag} className="text-xs text-gray-500 bg-gray-900 border border-gray-800 px-3 py-1 rounded-full">
               {tag}
             </span>
