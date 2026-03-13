@@ -59,7 +59,7 @@ export default function SavedJobsPage() {
               rel="noopener noreferrer"
               className="inline-block text-sm text-blue-400 hover:text-blue-300 transition"
             >
-              Visa annons →
+              Visa annonsen →
             </a>
           </div>
         ))}
