@@ -1,5 +1,8 @@
+import PageTransition from '../components/PageTransition'
+
 export default function OmPage() {
   return (
+    <PageTransition>
     <div className="max-w-2xl space-y-6">
       <h1 className="text-3xl font-bold">Om LIAhub</h1>
       <p className="text-gray-400 leading-relaxed">
@@ -12,5 +15,6 @@ export default function OmPage() {
         LIAHub är byggt av en YH-student, för YH-studenter.
       </p>
     </div>
+    </PageTransition>
   )
 }

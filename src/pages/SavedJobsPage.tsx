@@ -1,6 +1,7 @@
 import { useSavedJobs } from '../hooks/useSavedJobs'
 import { supabase } from '../services/supabase'
 import { useState, useEffect } from 'react'
+import PageTransition from '../components/PageTransition'
 
 export default function SavedJobsPage() {
   const { savedJobs, loading, unsaveJob } = useSavedJobs()
@@ -21,6 +22,7 @@ export default function SavedJobsPage() {
   if (loading) return <p className="text-gray-400">Laddar sparade jobb...</p>
 
   return (
+    <PageTransition>
     <div className="space-y-8 max-w-2xl">
       <div>
         <h1 className="text-3xl font-bold">Sparade jobb</h1>
@@ -63,5 +65,6 @@ export default function SavedJobsPage() {
         ))}
       </div>
     </div>
+    </PageTransition>
   )
 }
