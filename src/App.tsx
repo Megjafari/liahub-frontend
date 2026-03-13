@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import AuthModal from './components/AuthModal'
 import { useAuthModal } from './hooks/useAuthModal'
 import { AuthModalContext } from './context/AuthModalContext'
+import BackToTop from './components/BackToTop'
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -122,6 +123,7 @@ export default function App() {
         </main>
         <Footer />
         <AuthModal isOpen={isOpen} onClose={closeModal} />
+        <BackToTop />
       </div>
     </AuthModalContext.Provider>
   )
