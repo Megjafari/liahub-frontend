@@ -13,13 +13,32 @@ const STATUS_COLORS: Record<string, string> = {
   'Avslag': 'bg-red-900 text-red-300',
 }
 
+const SOURCES = ['LinkedIn', 'Arbetsförmedlingen', 'Indeed', 'Företagets webbsida', 'Annat']
+
 export default function ApplicationsPage() {
-  const { applications, loading, updateStatus, deleteApplication } = useApplications()
+  const { applications, loading, updateStatus, deleteApplication, createManualApplication } = useApplications()
   const [session, setSession] = useState<any>(null)
+  const [showForm, setShowForm] = useState(false)
+  const [form, setForm] = useState({
+    jobTitle: '',
+    employer: '',
+    location: '',
+    source: '',
+    link: '',
+    notes: '',
+    status: 'Sökt'
+  })
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
   }, [])
+
+  const handleSubmit = async () => {
+    if (!form.jobTitle || !form.employer) return
+    await createManualApplication(form)
+    setForm({ jobTitle: '', employer: '', location: '', source: '', link: '', notes: '', status: 'Sökt' })
+    setShowForm(false)
+  }
 
   if (!session) {
     return (
@@ -33,30 +52,106 @@ export default function ApplicationsPage() {
 
   return (
     <PageTransition>
-    <div className="space-y-8 max-w-2xl">
-      <div>
-        <h1 className="text-3xl font-bold">Mina ansökningar</h1>
-        <p className="text-gray-400 mt-2">{applications.length} ansökningar</p>
-      </div>
-
-      {applications.length === 0 && (
-        <div className="text-center py-16">
-          <p className="text-gray-400">Du har inte loggat någon ansökan ännu.</p>
-          <p className="text-gray-500 text-sm mt-2">Markera ett jobb som "Sökt" från jobblistan.</p>
+      <div className="space-y-8 max-w-2xl">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Mina ansökningar</h1>
+            <p className="text-gray-400 mt-2">{applications.length} ansökningar</p>
+          </div>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition"
+          >
+            + Lägg till manuellt
+          </button>
         </div>
-      )}
 
-      <div className="space-y-4">
-        {applications.map(app => (
-          <ApplicationCard
-            key={app.id}
-            application={app}
-            onUpdateStatus={updateStatus}
-            onDelete={deleteApplication}
-          />
-        ))}
+        {showForm && (
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 space-y-4">
+            <h2 className="font-semibold text-white">Lägg till ansökan</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input
+                placeholder="Jobbtitel *"
+                value={form.jobTitle}
+                onChange={e => setForm(f => ({ ...f, jobTitle: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <input
+                placeholder="Företag *"
+                value={form.employer}
+                onChange={e => setForm(f => ({ ...f, employer: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <input
+                placeholder="Stad"
+                value={form.location}
+                onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <select
+                value={form.source}
+                onChange={e => setForm(f => ({ ...f, source: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              >
+                <option value="">Källa...</option>
+                {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <input
+                placeholder="Länk till annons"
+                value={form.link}
+                onChange={e => setForm(f => ({ ...f, link: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <select
+                value={form.status}
+                onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              >
+                {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <textarea
+              placeholder="Anteckningar..."
+              value={form.notes}
+              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+              rows={2}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition"
+              >
+                Spara
+              </button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="text-sm text-gray-400 hover:text-white transition"
+              >
+                Avbryt
+              </button>
+            </div>
+          </div>
+        )}
+
+        {applications.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-gray-400">Du har inte loggat någon ansökan ännu.</p>
+            <p className="text-gray-500 text-sm mt-2">Markera ett jobb som "Sökt" från jobblistan eller lägg till manuellt.</p>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {applications.map(app => (
+            <ApplicationCard
+              key={app.id}
+              application={app}
+              onUpdateStatus={updateStatus}
+              onDelete={deleteApplication}
+            />
+          ))}
+        </div>
       </div>
-    </div>
     </PageTransition>
   )
 }
@@ -70,11 +165,27 @@ function ApplicationCard({ application, onUpdateStatus, onDelete }: {
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-3">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-semibold text-white">{application.jobTitle}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-semibold text-white">{application.jobTitle}</h2>
+            {application.isManual && (
+              <span className="text-xs bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full">Manuell</span>
+            )}
+          </div>
           <p className="text-sm text-gray-400 mt-1">{application.employer}</p>
-          <p className="text-xs text-gray-500 mt-1">
-            Sökt {new Date(application.appliedAt).toLocaleDateString('sv-SE')}
-          </p>
+          <div className="flex flex-wrap gap-3 mt-1">
+            {application.location && (
+              <p className="text-xs text-gray-500">{application.location}</p>
+            )}
+            {application.source && (
+              <p className="text-xs text-gray-500">via {application.source}</p>
+            )}
+            <p className="text-xs text-gray-500">
+              {new Date(application.appliedAt).toLocaleDateString('sv-SE')}
+            </p>
+          </div>
+          {application.notes && (
+            <p className="text-xs text-gray-500 mt-2 italic">{application.notes}</p>
+          )}
         </div>
         <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap font-medium ${STATUS_COLORS[application.status]}`}>
           {application.status}
@@ -98,14 +209,25 @@ function ApplicationCard({ application, onUpdateStatus, onDelete }: {
       </div>
 
       <div className="flex items-center gap-4">
-        <a
-          href={`https://arbetsformedlingen.se/platsbanken/annonser/${application.externalJobId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-blue-400 hover:text-blue-300 transition"
-        >
-          Visa annons →
-        </a>
+        {application.link ? (
+          <a
+            href={application.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-400 hover:text-blue-300 transition"
+          >
+            Visa annons →
+          </a>
+        ) : !application.isManual && (
+          <a
+            href={`https://arbetsformedlingen.se/platsbanken/annonser/${application.externalJobId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-400 hover:text-blue-300 transition"
+          >
+            Visa annons →
+          </a>
+        )}
         <button
           onClick={() => onDelete(application.id)}
           className="text-sm text-red-400 hover:text-red-300 transition"

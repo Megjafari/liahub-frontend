@@ -50,6 +50,11 @@ export interface Application {
   externalJobId: string
   jobTitle: string
   employer: string
+  location: string | null
+  source: string | null
+  link: string | null
+  notes: string | null
+  isManual: boolean
   contactName: string | null
   contactEmail: string | null
   contactPhone: string | null

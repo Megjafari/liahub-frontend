@@ -46,5 +46,22 @@ export function useApplications() {
     await fetchApplications()
   }
 
-  return { applications, loading, createApplication, updateStatus, deleteApplication }
+  const createManualApplication = async (data: {
+  jobTitle: string
+  employer: string
+  location?: string
+  source?: string
+  link?: string
+  notes?: string
+  status?: string
+  }) => {
+  await api.post('/api/Applications', {
+    externalJobId: crypto.randomUUID(),
+    isManual: true,
+    ...data
+  })
+  await fetchApplications()
+  }
+
+  return { applications, loading, createApplication, createManualApplication, updateStatus, deleteApplication }
 }
