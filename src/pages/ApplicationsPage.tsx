@@ -26,7 +26,9 @@ export default function ApplicationsPage() {
     source: '',
     link: '',
     notes: '',
-    status: 'Sökt'
+    status: '',
+    contactName: '',
+    contactEmail: '',
   })
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function ApplicationsPage() {
   const handleSubmit = async () => {
     if (!form.jobTitle || !form.employer) return
     await createManualApplication(form)
-    setForm({ jobTitle: '', employer: '', location: '', source: '', link: '', notes: '', status: 'Sökt' })
+    setForm({ jobTitle: '', employer: '', location: '', source: '', link: '', notes: '', status: '', contactName: '', contactEmail: '' })
     setShowForm(false)
   }
 
@@ -83,7 +85,7 @@ export default function ApplicationsPage() {
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
               <input
-                placeholder="Stad"
+                placeholder="Stad (valfritt)"
                 value={form.location}
                 onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -93,13 +95,26 @@ export default function ApplicationsPage() {
                 onChange={e => setForm(f => ({ ...f, source: e.target.value }))}
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
               >
-                <option value="">Källa...</option>
+                <option value="">Källa till annons...</option>
                 {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
               <input
-                placeholder="Länk till annons"
+                placeholder="Länk till annons (valfritt)"
                 value={form.link}
                 onChange={e => setForm(f => ({ ...f, link: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+
+              <input
+                placeholder="Kontaktperson (valfritt)"
+                value={form.contactName}
+                onChange={e => setForm(f => ({ ...f, contactName: e.target.value }))}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <input
+                placeholder="E-post till kontakt (valfritt)"
+                value={form.contactEmail}
+                onChange={e => setForm(f => ({ ...f, contactEmail: e.target.value }))}
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
               <select
@@ -107,6 +122,7 @@ export default function ApplicationsPage() {
                 onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
                 className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
               >
+                <option value="" disabled>Status...</option>
                 {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
