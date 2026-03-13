@@ -39,6 +39,44 @@ function ProgressRing({ percent }: { percent: number }) {
   )
 }
 
+function formatJobAge(publishedAt: string | null): string {
+  if (!publishedAt) return ''
+  const days = Math.floor((Date.now() - new Date(publishedAt).getTime()) / (1000 * 60 * 60 * 24))
+  if (days === 0) return 'Publicerad idag'
+  if (days === 1) return 'Publicerad igår'
+  if (days < 7) return `Publicerad ${days} dagar sedan`
+  const weeks = Math.floor(days / 7)
+  return `Publicerad ${weeks} ${weeks === 1 ? 'vecka' : 'veckor'} sedan`
+}
+
+function JobListSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-3 animate-pulse">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2 flex-1">
+              <div className="h-4 bg-gray-800 rounded w-2/3" />
+              <div className="h-3 bg-gray-800 rounded w-1/3" />
+              <div className="h-3 bg-gray-800 rounded w-1/4" />
+            </div>
+            <div className="w-12 h-12 bg-gray-800 rounded-full" />
+          </div>
+          <div className="flex gap-2">
+            <div className="h-6 bg-gray-800 rounded w-12" />
+            <div className="h-6 bg-gray-800 rounded w-16" />
+            <div className="h-6 bg-gray-800 rounded w-10" />
+          </div>
+          <div className="flex justify-between">
+            <div className="h-3 bg-gray-800 rounded w-20" />
+            <div className="h-3 bg-gray-800 rounded w-24" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function HomePage() {
   const [search, setSearch] = useState('')
   const [selectedTechs, setSelectedTechs] = useState<string[]>([])
@@ -130,7 +168,7 @@ export default function HomePage() {
         )}
       </div>
 
-      {loading && <p className="text-gray-400">Laddar annonser...</p>}
+      {loading && <JobListSkeleton />}
       {error && <p className="text-red-400">{error}</p>}
       {!loading && jobs.length === 0 && (
         <div className="text-center py-16 space-y-4">
@@ -144,6 +182,12 @@ export default function HomePage() {
             Hittade inte vad du söker? Sök på LinkedIn →
           </a>
         </div>
+      )}
+
+      {!loading && jobs.length > 0 && (
+        <p className="text-sm text-gray-500">
+          {total} annonser matchar din profil
+        </p>
       )}
 
       <div className="space-y-4">
@@ -217,6 +261,9 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
               }`}>
                 {job.workMode}
               </span>
+            )}
+            {job.publishedAt && (
+              <p className="text-xs text-gray-600">{formatJobAge(job.publishedAt)}</p>
             )}
           </div>
         </div>
@@ -295,7 +342,7 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
           rel="noopener noreferrer"
           className="text-sm text-blue-400 hover:text-blue-300 transition"
         >
-          Visa annons →
+          Visa annonsen →
         </a>
         <div className="flex items-center gap-4">
           <button

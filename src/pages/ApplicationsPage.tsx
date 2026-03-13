@@ -216,7 +216,7 @@ function ApplicationCard({ application, onUpdateStatus, onDelete }: {
             rel="noopener noreferrer"
             className="text-sm text-blue-400 hover:text-blue-300 transition"
           >
-            Visa annons →
+            Visa annonsen →
           </a>
         ) : !application.isManual && (
           <a
@@ -225,7 +225,7 @@ function ApplicationCard({ application, onUpdateStatus, onDelete }: {
             rel="noopener noreferrer"
             className="text-sm text-blue-400 hover:text-blue-300 transition"
           >
-            Visa annons →
+            Visa annonsen →
           </a>
         )}
         <button
