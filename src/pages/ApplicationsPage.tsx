@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import { supabase } from '../services/supabase'
 import type { Application } from '../types'
+import PageTransition from '../components/PageTransition'
 
 const STATUSES = ['Sökt', 'Intervju', 'Erbjudande', 'Avslag']
 
@@ -31,6 +32,7 @@ export default function ApplicationsPage() {
   if (loading) return <p className="text-gray-400">Laddar ansökningar...</p>
 
   return (
+    <PageTransition>
     <div className="space-y-8 max-w-2xl">
       <div>
         <h1 className="text-3xl font-bold">Mina ansökningar</h1>
@@ -55,6 +57,7 @@ export default function ApplicationsPage() {
         ))}
       </div>
     </div>
+    </PageTransition>
   )
 }
 

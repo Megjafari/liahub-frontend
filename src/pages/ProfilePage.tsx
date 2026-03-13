@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useProfile } from '../hooks/useProfile'
 import { useNotifications } from '../hooks/useNotifications'
 import { supabase } from '../services/supabase'
+import PageTransition from '../components/PageTransition'
 
 const TECH_CATEGORIES = {
   'Backend': ['.NET', 'C#', 'ASP.NET', 'Java', 'Spring', 'Python', 'Node.js', 'PHP', 'Go', 'Rust'],
@@ -51,6 +52,7 @@ export default function ProfilePage() {
   if (loading) return <p className="text-gray-400">Laddar profil...</p>
 
   return (
+    <PageTransition>
     <div className="space-y-8 max-w-2xl">
       <div>
         <h1 className="text-3xl font-bold">Min profil</h1>
@@ -115,5 +117,6 @@ export default function ProfilePage() {
         {saved ? '✓ Sparat!' : 'Spara profil'}
       </button>
     </div>
+    </PageTransition>
   )
 }

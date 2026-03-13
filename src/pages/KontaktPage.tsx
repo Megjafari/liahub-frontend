@@ -1,5 +1,8 @@
+import PageTransition from '../components/PageTransition'
+
 export default function KontaktPage() {
   return (
+    <PageTransition>
     <div className="max-w-2xl space-y-6">
       <h1 className="text-3xl font-bold">Kontakt</h1>
       <p className="text-gray-400 leading-relaxed">
@@ -12,5 +15,6 @@ export default function KontaktPage() {
         liahub@meghdadjafari.dev
       </a>
     </div>
+    </PageTransition>
   )
 }

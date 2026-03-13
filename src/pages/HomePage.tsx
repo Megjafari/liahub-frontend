@@ -4,6 +4,7 @@ import { useSavedJobs } from '../hooks/useSavedJobs'
 import { useApplications } from '../hooks/useApplications'
 import { supabase } from '../services/supabase'
 import type { Job } from '../types'
+import PageTransition from '../components/PageTransition'
 
 const TECH_OPTIONS = [
   '.NET', 'C#', 'React', 'TypeScript', 'JavaScript',
@@ -59,12 +60,37 @@ export default function HomePage() {
   }
 
   return (
+    <PageTransition>
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Hitta techjobb som matchar dina skills</h1>
-        <p className="text-gray-400 mt-2">Annonser rankade efter hur väl de matchar din profil</p>
+
+      {/* Hero */}
+      <div className="relative pt-4 pb-2">
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/10 rounded-full blur-3xl" />
+        </div>
+
+        <div className="inline-flex items-center gap-2 bg-blue-950/60 border border-blue-800/50 text-blue-400 text-xs px-3 py-1 rounded-full mb-4">
+          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+          För YH-studenter inom tech
+        </div>
+
+        <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
+          Hitta techjobb som matchar<br className="hidden sm:block" /> dina skills
+        </h1>
+        <p className="text-gray-400 mt-3">
+          Annonser rankade efter hur väl de matchar din profil
+        </p>
+
+        <div className="flex flex-wrap gap-2 mt-4">
+          {['Rankade efter tech stack', 'Byggd för YH-studenter', 'Annonser från Arbetsförmedlingen'].map(tag => (
+            <span key={tag} className="text-xs text-gray-500 bg-gray-900 border border-gray-800 px-3 py-1 rounded-full">
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <input
@@ -155,6 +181,7 @@ export default function HomePage() {
         </div>
       )}
     </div>
+    </PageTransition>
   )
 }
 

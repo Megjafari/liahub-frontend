@@ -3,6 +3,7 @@ import { useSavedJobs } from '../hooks/useSavedJobs'
 import { useApplications } from '../hooks/useApplications'
 import { supabase } from '../services/supabase'
 import { Link } from 'react-router-dom'
+import PageTransition from '../components/PageTransition'
 
 export default function DashboardPage() {
   const { savedJobs, loading: savedLoading } = useSavedJobs()
@@ -31,6 +32,7 @@ export default function DashboardPage() {
   }
 
   return (
+    <PageTransition>
     <div className="space-y-8 max-w-2xl">
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -112,6 +114,7 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
+    </PageTransition>
   )
 }
 
