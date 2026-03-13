@@ -191,13 +191,21 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
             )}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1">
+        <div className="flex flex-col items-center gap-2">
           {hasMatchData ? (
             <ProgressRing percent={matchPercent} />
           ) : (
             <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full whitespace-nowrap">
               {job.relevanceScore}p relevans
             </span>
+          )}
+          {hasMatchData && (
+            <button
+              onClick={() => setShowWhy(!showWhy)}
+              className="text-xs text-gray-500 hover:text-gray-300 transition whitespace-nowrap"
+            >
+              {showWhy ? '▲ Dölj' : '▼ Varför?'}
+            </button>
           )}
         </div>
       </div>
@@ -234,27 +242,12 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
         </div>
       )}
 
-      {hasMatchData && (
-        <button
-          onClick={() => setShowWhy(!showWhy)}
-          className="text-xs text-gray-500 hover:text-gray-300 transition"
-        >
-          {showWhy ? '▲ Dölj matchinfo' : '▼ Varför denna match?'}
-        </button>
-      )}
-
       {showWhy && (
         <div className="bg-gray-800 rounded-lg p-3 space-y-2 text-xs">
           {job.matchedSkills.length > 0 && (
             <div>
               <span className="text-green-400 font-medium">Matchar dina skills: </span>
               <span className="text-gray-300">{job.matchedSkills.join(', ')}</span>
-            </div>
-          )}
-          {job.missingSkills.length > 0 && (
-            <div>
-              <span className="text-yellow-400 font-medium">Saknar du: </span>
-              <span className="text-gray-300">{job.missingSkills.join(', ')}</span>
             </div>
           )}
           {job.studentSignals.length > 0 && (
@@ -266,7 +259,7 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
         </div>
       )}
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between">
         <a
           href={job.url}
           target="_blank"
@@ -275,23 +268,25 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
         >
           Visa annons →
         </a>
-        <button
-          onClick={isSaved ? onUnsave : onSave}
-          className={`text-sm transition ${
-            isSaved ? 'text-yellow-400 hover:text-yellow-300' : 'text-gray-500 hover:text-gray-300'
-          }`}
-        >
-          {isSaved ? '★ Sparad' : '☆ Spara'}
-        </button>
-        <button
-          onClick={onApply}
-          disabled={isApplied}
-          className={`text-sm transition ${
-            isApplied ? 'text-green-400 cursor-default' : 'text-gray-500 hover:text-gray-300'
-          }`}
-        >
-          {isApplied ? '✓ Sökt' : 'Markera som sökt'}
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={isSaved ? onUnsave : onSave}
+            className={`text-sm transition ${
+              isSaved ? 'text-yellow-400 hover:text-yellow-300' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            {isSaved ? '★ Sparad' : '☆ Spara'}
+          </button>
+          <button
+            onClick={onApply}
+            disabled={isApplied}
+            className={`text-sm transition ${
+              isApplied ? 'text-green-400 cursor-default' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            {isApplied ? '✓ Sökt' : 'Markera som sökt'}
+          </button>
+        </div>
       </div>
     </div>
   )
