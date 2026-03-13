@@ -15,8 +15,6 @@ export default function ProfilePage() {
   const { profile, loading, updateProfile } = useProfile()
   const { active, loading: notifLoading, updateSettings } = useNotifications()
   const [session, setSession] = useState<any>(null)
-  const [name, setName] = useState('')
-  const [city, setCity] = useState('')
   const [selectedTechs, setSelectedTechs] = useState<string[]>([])
   const [saved, setSaved] = useState(false)
 
@@ -26,8 +24,6 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (profile) {
-      setName(profile.name || '')
-      setCity(profile.city || '')
       setSelectedTechs(profile.techStacks || [])
     }
   }, [profile])
@@ -39,7 +35,7 @@ export default function ProfilePage() {
   }
 
   const handleSave = async () => {
-    await updateProfile({ name, city, techStacks: selectedTechs })
+    await updateProfile({ techStacks: selectedTechs })
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -59,33 +55,6 @@ export default function ProfilePage() {
       <div>
         <h1 className="text-3xl font-bold">Min profil</h1>
         <p className="text-gray-400 mt-2">Fyll i din profil för att få bättre matchningar</p>
-      </div>
-
-      {/* Basic info */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
-        <h2 className="font-semibold text-white">Grundinfo</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-sm text-gray-400">Namn</label>
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Ditt namn"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm text-gray-400">Stad</label>
-            <input
-              type="text"
-              value={city}
-              onChange={e => setCity(e.target.value)}
-              placeholder="Din stad"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            />
-          </div>
-        </div>
       </div>
 
       {/* Tech stack */}
@@ -116,30 +85,29 @@ export default function ProfilePage() {
         ))}
       </div>
 
-    {/* Notifications */}
-    {!notifLoading && (
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
-        <div>
-          <h2 className="font-semibold text-white">Jobbnotiser</h2>
-          <p className="text-sm text-gray-400 mt-1">Få mejl direkt när nya jobb matchar din techstack</p>
+      {/* Notifications */}
+      {!notifLoading && (
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+          <div>
+            <h2 className="font-semibold text-white">Jobbnotiser</h2>
+            <p className="text-sm text-gray-400 mt-1">Få mejl direkt när nya jobb matchar din techstack</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-300">Notifiera mig om nya matchningar</span>
+            <button
+              onClick={() => updateSettings(!active)}
+              className={`relative w-12 h-6 rounded-full transition ${
+                active ? 'bg-blue-600' : 'bg-gray-700'
+              }`}
+            >
+              <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                active ? 'left-7' : 'left-1'
+              }`} />
+            </button>
+          </div>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-300">Notifiera mig om nya matchningar</span>
-          <button
-            onClick={() => updateSettings(!active)}
-            className={`relative w-12 h-6 rounded-full transition ${
-              active ? 'bg-blue-600' : 'bg-gray-700'
-            }`}
-          >
-            <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
-              active ? 'left-7' : 'left-1'
-            }`} />
-          </button>
-        </div>
-      </div>
-    )}
+      )}
 
-      {/* Save button */}
       <button
         onClick={handleSave}
         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition font-medium"
