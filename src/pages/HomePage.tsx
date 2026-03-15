@@ -251,10 +251,10 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
         <div>
           <h2 className="font-semibold text-white">{job.title}</h2>
           <p className="text-sm text-gray-400 mt-1">{job.employer}</p>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex flex-wrap items-center gap-2 mt-1">
             {job.city && <p className="text-sm text-gray-500">{job.city}</p>}
             {job.workMode && (
-              <span className={`text-xs px-2 py-0.5 rounded-full ${
+              <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
                 job.workMode === 'Remote' ? 'bg-purple-900 text-purple-300' :
                 job.workMode === 'Hybrid' ? 'bg-teal-900 text-teal-300' :
                 'bg-gray-800 text-gray-500'
@@ -263,7 +263,7 @@ function JobCard({ job, isSaved, isApplied, onSave, onUnsave, onApply }: {
               </span>
             )}
             {job.publishedAt && (
-              <p className="text-xs text-gray-600">{formatJobAge(job.publishedAt)}</p>
+              <p className="text-xs text-gray-600 whitespace-nowrap">{formatJobAge(job.publishedAt)}</p>
             )}
           </div>
         </div>
