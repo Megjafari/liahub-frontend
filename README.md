@@ -16,8 +16,8 @@
 
 ## Screenshots
 
-![Jobblistan](./screenshots/home.png)
-![Ansökningar](./screenshots/applications.png)
+![Jobblistan](./scrennshots/home.png)
+![Ansökningar](./scrennshots/applications.png)
 
 ## Features
 
